@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Server {
     private static ArrayList<ClientHandler> clients = new ArrayList<>();
+    static Database db;
 
     public static void main(String[] args) {
         ServerSocket serverSocket = null;
@@ -74,6 +75,7 @@ public class Server {
             try {
                 while ((message = reader.readLine()) != null) {
                     System.out.println(nickname + ": " + message);
+                    db.logMessage(nickname,message,socket.getInetAddress().getHostAddress());
                     broadcastMessage(message, nickname, this);
                 }
             } catch (IOException e) {
@@ -86,6 +88,7 @@ public class Server {
                 }
                 clients.remove(this);
                 System.out.println("Клієнт відключився: " + socket.getInetAddress().getHostAddress());
+                db.logMessage(nickname,"Клієнт відключився: ",socket.getInetAddress().getHostAddress());
                 ExitMessage(nickname, this);
             }
         }
