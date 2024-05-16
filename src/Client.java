@@ -9,7 +9,7 @@ public class Client {
 
     public static void main(String[] args) {
         try {
-            socket = new Socket("172.20.115.75", 8888);
+            socket = new Socket("172.20.110.5", 8888);
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new PrintWriter(socket.getOutputStream(), true);
 

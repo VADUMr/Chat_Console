@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
     private static final String DB_URL = "jdbc:mysql://localhost/testt";
@@ -16,6 +18,7 @@ public class Database {
             e.printStackTrace();
         }
     }
+
     public static void logMessage(String nickname, String message, String ipAddress) {
         Thread dataThread = new Thread(() -> {
             try {
@@ -32,9 +35,46 @@ public class Database {
         });
         dataThread.start();
     }
+    public static List<Message> getLast50Messages() {
+        List<Message> messages = new ArrayList<>();
+        try {
+            String sql = "SELECT id, nickname, message, ip_address FROM messages ORDER BY id DESC LIMIT 50";
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String nickname = resultSet.getString("nickname");
+                String message = resultSet.getString("message");
+                String ipAddress = resultSet.getString("ip_address");
+                Message msg = new Message(id, nickname, message, ipAddress);
+                messages.add(0, msg);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
+    public static boolean deleteMessageById(int messageId) {
+        boolean deleted = false;
+        try {
+            String sql = "DELETE FROM messages WHERE id = ?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1, messageId);
+            int rowsDeleted = statement.executeUpdate();
+            deleted = rowsDeleted > 0;
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return deleted;
+    }
+
     public static void main(String[] args) {
         while (true) {
         }
-        }
-        //logMessage("UserNick", "Hello, world!", "192.168.0.1");
     }
+}
